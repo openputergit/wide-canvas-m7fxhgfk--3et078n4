@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberVision - AI Object Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { filter: drop-shadow(0 0 5px #0ff) drop-shadow(0 0 10px #0ff) drop-shadow(0 0 15px #0ff); }
+            50% { filter: drop-shadow(0 0 2px #0ff) drop-shadow(0 0 5px #0ff) drop-shadow(0 0 10px #0ff); }
+        }
+
+        .neon-text {
+            color: #0ff;
+            animation: neonPulse 2s infinite;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glitch-text {
+            animation: glitch 3s infinite;
+        }
+
+        .neon-border {
+            border: 2px solid #0ff;
+            box-shadow: 0 0 10px #0ff, inset 0 0 10px #0ff;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(45deg, #000428, #004e92);
+        }
+
+        .loading::after {
+            content: '';
+            animation: loading 1s infinite;
+        }
+
+        @keyframes loading {
+            0% { content: '.' }
+            33% { content: '..' }
+            66% { content: '...' }
+            100% { content: '.' }
+        }
+
+        #videoFeed, #imagePreview {
+            max-height: 480px;
+            width: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="cyber-gradient min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl neon-text font-bold">CyberVision</h1>
+            <div class="space-x-4">
+                <a href="#home" class="neon-text hover:text-cyan-300">Home</a>
+                <a href="#about" class="neon-text hover:text-cyan-300">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <section id="home" class="container mx-auto px-4 py-16 text-center">
+        <h1 class="text-4xl md:text-6xl neon-text glitch-text mb-8">Welcome to CyberVision</h1>
+        <p class="text-xl mb-8">Experience next-gen object detection powered by advanced AI</p>
+        <button onclick="showDetection()" class="neon-border bg-transparent px-8 py-4 rounded-lg text-cyan-400 hover:bg-cyan-900 transition-all">
+            Get Started
+        </button>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="container mx-auto px-4 py-16">
+        <h2 class="text-3xl neon-text mb-8 text-center">About</h2>
+        <p class="text-center mb-8">Our advanced AI system provides real-time object detection, image analysis, and video processing capabilities.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="neon-border p-6 rounded-lg">
+                <h3 class="neon-text text-xl mb-4">Real-Time Detection</h3>
+                <p>Use your webcam for instant object detection</p>
+            </div>
+            <div class="neon-border p-6 rounded-lg">
+                <h3 class="neon-text text-xl mb-4">Image Analysis</h3>
+                <p>Upload and analyze static images</p>
+            </div>
+            <div class="neon-border p-6 rounded-lg">
+                <h3 class="neon-text text-xl mb-4">Video Processing</h3>
+                <p>Frame-by-frame video analysis</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detection Interface -->
+    <section id="detection" class="hidden container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="neon-border p-4 rounded-lg">
+                <h3 class="neon-text text-xl mb-4">Detection Feed</h3>
+                <video id="videoFeed" class="neon-border rounded-lg" autoplay playsinline></video>
+                <img id="imagePreview" class="neon-border rounded-lg hidden" alt="Preview">
+                <div class="mt-4 flex justify-center space-x-4">
+                    <button id="startBtn" class="neon-border bg-transparent px-4 py-2 rounded-lg text-cyan-400 hover:bg-cyan-900">Start Scan</button>
+                    <button id="stopBtn" class="neon-border bg-transparent px-4 py-2 rounded-lg text-cyan-400 hover:bg-cyan-900">Stop Scan</button>
+                </div>
+            </div>
+            <div class="neon-border p-4 rounded-lg">
+                <h3 class="neon-text text-xl mb-4">Controls</h3>
+                <div class="space-y-4">
+                    <button onclick="startWebcam()" class="w-full neon-border bg-transparent px-4 py-2 rounded-lg text-cyan-400 hover:bg-cyan-900">
+                        Real-Time Detection
+                    </button>
+                    <input type="file" id="imageInput" accept="image/*" class="hidden">
+                    <label for="imageInput" class="block w-full neon-border bg-transparent px-4 py-2 rounded-lg text-cyan-400 hover:bg-cyan-900 cursor-pointer text-center">
+                        Upload Image
+                    </label>
+                    <input type="file" id="videoInput" accept="video/*" class="hidden">
+                    <label for="videoInput" class="block w-full neon-border bg-transparent px-4 py-2 rounded-lg text-cyan-400 hover:bg-cyan-900 cursor-pointer text-center">
+                        Upload Video
+                    </label>
+                </div>
+                <div class="mt-4">
+                    <p id="status" class="neon-text">Status: Ready</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let stream = null;
+        const videoElement = document.getElementById('videoFeed');
+        const imagePreview = document.getElementById('imagePreview');
+        const status = document.getElementById('status');
+
+        function showDetection() {
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('about').classList.add('hidden');
+            document.getElementById('detection').classList.remove('hidden');
+        }
+
+        async function startWebcam() {
+            try {
+                imagePreview.classList.add('hidden');
+                videoElement.classList.remove('hidden');
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                updateStatus('Webcam active - Ready to detect');
+            } catch (err) {
+                updateStatus('Error accessing webcam');
+                console.error(err);
+            }
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            updateStatus('Scanning for objects...');
+            // Here you would typically start your object detection logic
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                videoElement.srcObject = null;
+            }
+            updateStatus('Scan stopped');
+        });
+
+        document.getElementById('imageInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    videoElement.classList.add('hidden');
+                    imagePreview.classList.remove('hidden');
+                    imagePreview.src = e.target.result;
+                    updateStatus('Image loaded - Processing...');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('videoInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                videoElement.classList.remove('hidden');
+                imagePreview.classList.add('hidden');
+                videoElement.src = URL.createObjectURL(file);
+                updateStatus('Video loaded - Processing...');
+            }
+        });
+
+        function updateStatus(message) {
+            status.textContent = `Status: ${message}`;
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
